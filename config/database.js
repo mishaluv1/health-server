@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const seedDatabase = require('../utils/seedDatabase.js');
 
 let isConnected = false;
 let useInMemory = false;
@@ -20,10 +21,14 @@ const connectDB = async () => {
 
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      serverSelectionTimeoutMS: 10000, // Timeout after 10s for Atlas
     });
     isConnected = true;
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+
+    // Seed the database with demo data
+    await seedDatabase();
+
     return { useInMemory: false, connection: conn };
   } catch (error) {
     console.warn(`⚠️  MongoDB connection failed: ${error.message}`);
